@@ -76,10 +76,10 @@ fig, ax1 = plt.subplots(figsize=(20, 10))
 for i in range(n):
     color = colors[i] if i < len(colors) else None
     ax1.plot(all_schritte[i], all_verlust[i], color=color, label=legends[i])
-ax1.set_xlabel('Episode', fontsize=18, labelpad=22)
-ax1.set_ylabel('Verlust', fontsize=20, labelpad=22)
-ax1.legend(fontsize=20)
-ax1.tick_params(axis='both', which='major', labelsize=20)
+ax1.set_xlabel('Episode', fontsize=28, labelpad=20)
+ax1.set_ylabel('Verlust', fontsize=28, labelpad=20)
+ax1.legend(fontsize=28)
+ax1.tick_params(axis='both', which='major', labelsize=26)
 ax1.grid(True)
 
 # x-Achse Ticks alle 200.000 Schritte
@@ -93,8 +93,8 @@ def format_func(value, tick_number):
 # ax1.xaxis.set_major_formatter(FuncFormatter(format_func))
 
 # x-Tick-Labels vertikal ausrichten
-for tick in ax1.get_xticklabels():
-    tick.set_rotation(45)
+# for tick in ax1.get_xticklabels():
+#     tick.set_rotation(45)
 
 # Sekundäre x-Achse für Zeitwert
 ax2 = ax1.twiny()
@@ -118,12 +118,12 @@ for tick in tick_positions:
 # Anwenden der Ticks und Labels auf die sekundäre x-Achse
 ax2.set_xticks(tick_positions * (max(max_elapsed_schritte) / max_time))
 ax2.set_xticklabels(tick_labels)
-ax2.set_xlabel('Vergangene Zeit', fontsize=22, labelpad=20)
-ax2.tick_params(axis='both', which='major', labelsize=20)
+ax2.set_xlabel('Vergangene Zeit', fontsize=28, labelpad=20)
+ax2.tick_params(axis='both', which='major', labelsize=26)
 
-# x-Tick-Labels vertikal ausrichten
-for tick in ax2.get_xticklabels():
-    tick.set_rotation(45)
+# # x-Tick-Labels vertikal ausrichten
+# for tick in ax2.get_xticklabels():
+#     tick.set_rotation(45)
 
 # Anzeigen des Plots
 plt.tight_layout()

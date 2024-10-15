@@ -4,35 +4,49 @@ import pandas as pd
 from matplotlib.ticker import FuncFormatter
 from datetime import datetime, timedelta
 
-# Anzahl der CSV-Dateien eingeben
-n = int(input("Bitte die Anzahl der CSV-Dateien eingeben: "))
+# Anzahl der CSV-Dateien
+n = 8
 
-# Listen zum Speichern der Daten und Legendenwerte
+# Pfade zu den CSV-Dateien und Legendenwerte
+csv_file_paths = [
+    r"C:\Users\wn00194953\Downloads\angle_0_smoothed.csv",
+    r"C:\Users\wn00194953\Downloads\angle_2_smoothed.csv",
+    r"C:\Users\wn00194953\Downloads\angle_4_smoothed.csv",
+    r"C:\Users\wn00194953\Downloads\angle_6_1_smoothed.csv",
+    r"C:\Users\wn00194953\Downloads\angle_8_1_smoothed.csv",
+    r"C:\Users\wn00194953\Downloads\angle_10_1_smoothed.csv",
+    r"C:\Users\wn00194953\Downloads\angle_12_1_smoothed.csv",
+    r"C:\Users\wn00194953\Downloads\angle_14_1_smoothed.csv"
+]
+
+legends = [
+    "0 Grad", "2 Grad", "4 Grad", "6 Grad",
+    "8 Grad", "10 Grad", "12 Grad", "14 Grad"
+]
+
+# Listen zum Speichern der Daten
 all_schritte = []
-all_Verlust = []
+all_belohnung = []
 all_zeitwert_datetime = []
 all_elapsed_time = []
-legends = []
 max_elapsed_time = timedelta(0)
 
 # CSV-Dateien einlesen
 for i in range(n):
-    csv_file_path = input(f"Bitte den vollständigen Pfad zur CSV-Datei {i+1} eingeben: ")
-    legend = input(f"Bitte den Legendenwert für Kurve {i+1} eingeben: ")
-    legends.append(legend)
+    csv_file_path = csv_file_paths[i]
     
     # Lesen der CSV-Datei
-    data = pd.read_csv(csv_file_path, skiprows=1, header=None, names=['Zeitwert', 'Schritte', 'Verlust'])
+    data = pd.read_csv(csv_file_path, skiprows=1, header=None, names=['Zeitwert', 'Schritte', 'Belohnung'])
     
     # Sicherstellen, dass die Datentypen korrekt sind
     data['Zeitwert'] = data['Zeitwert'].astype(float)
     data['Schritte'] = data['Schritte'].astype(int)
-    data['Verlust'] = data['Verlust'].astype(float) / 100
+    data['Belohnung'] = data['Belohnung'].astype(float)
     
     # Extrahieren der Spalten
     zeitwert = data['Zeitwert']
     schritte = data['Schritte']
-    Verlust = data['Verlust']
+    belohnung = data['Belohnung'] / 100
     
     # Wall time in datetime-Objekte konvertieren
     zeitwert_datetime = [datetime.fromtimestamp(ts) for ts in zeitwert]
@@ -43,7 +57,7 @@ for i in range(n):
     
     # Speichern der Daten
     all_schritte.append(schritte)
-    all_Verlust.append(Verlust)
+    all_belohnung.append(belohnung)
     all_zeitwert_datetime.append(zeitwert_datetime)
     all_elapsed_time.append(elapsed_time)
     
@@ -67,36 +81,33 @@ colors = ['blue', 'red', 'green'] + [None] * (n - 3)
 # Erstellen des Plots
 fig, ax1 = plt.subplots(figsize=(20, 10))
 
-# Plotten der Verlust über die Schritte
+# Plotten der Belohnung über die Schritte
 for i in range(n):
     color = colors[i] if i < len(colors) else None
-    ax1.plot(all_schritte[i], all_Verlust[i], color=color, label=legends[i])
-ax1.set_xlabel('Episoden', fontsize=28, labelpad=20)
-ax1.set_ylabel('Verlust', fontsize=28, labelpad=20)
+    ax1.plot(all_schritte[i], all_belohnung[i], color=color, label=legends[i])
+ax1.set_xlabel('Schritte x$10^6$', fontsize=28, labelpad=20)
+ax1.set_ylabel('Belohnung', fontsize=28, labelpad=20)
 ax1.legend(fontsize=28)
-ax1.tick_params(axis='both', which='major', labelsize=26)
+ax1.minorticks_on()
+ax1.tick_params(axis='both', which='major', labelsize=26, width=2, length=4)
 ax1.grid(True)
 
-# x-Achse Ticks alle 200.000 Schritte
-ax1.set_xticks(np.arange(0, max(max(all_schritte, key=lambda x: x.max())) + 1, 100))
+# x-Achse Ticks alle 1.000.000 Schritte
+ax1.set_xticks(np.arange(0, max(max(all_schritte, key=lambda x: x.max())) + 1, 2*10**6))
 
 # Funktion zum Formatieren der Ticks
 def format_func(value, tick_number):
     return f'{int(value / 10**6)}'
 
 # Anwenden des Formatters auf die x-Achse
-# ax1.xaxis.set_major_formatter(FuncFormatter(format_func))
-
-# # x-Tick-Labels vertikal ausrichten
-# for tick in ax1.get_xticklabels():
-#     tick.set_rotation(45)
+ax1.xaxis.set_major_formatter(FuncFormatter(format_func))
 
 # Sekundäre x-Achse für Zeitwert
 ax2 = ax1.twiny()
 ax2.set_xlim(ax1.get_xlim())
 
 # Setzen der Ticks in n Zeit-Intervallen
-tick_interval = 720  # 12 Stunden in Minuten
+tick_interval = 240  # 12 Stunden in Minuten
 max_time = int(max_elapsed_minutes[-1])
 tick_positions = np.arange(0, max_time + tick_interval, tick_interval)
 
@@ -114,11 +125,8 @@ for tick in tick_positions:
 ax2.set_xticks(tick_positions * (max(max_elapsed_schritte) / max_time))
 ax2.set_xticklabels(tick_labels)
 ax2.set_xlabel('Vergangene Zeit', fontsize=28, labelpad=20)
-ax2.tick_params(axis='both', which='major', labelsize=26)
-
-# # x-Tick-Labels vertikal ausrichten
-# for tick in ax2.get_xticklabels():
-#     tick.set_rotation(45)
+ax2.minorticks_on()
+ax2.tick_params(axis='both', which='major', labelsize=26, width=2, length=4)
 
 # Anzeigen des Plots
 plt.tight_layout()

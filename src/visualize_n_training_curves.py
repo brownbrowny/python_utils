@@ -27,12 +27,12 @@ for i in range(n):
     # Sicherstellen, dass die Datentypen korrekt sind
     data['Zeitwert'] = data['Zeitwert'].astype(float)
     data['Schritte'] = data['Schritte'].astype(int)
-    data['Belohnung'] = data['Belohnung'].astype(float) / 100
+    data['Belohnung'] = data['Belohnung'].astype(float)
     
     # Extrahieren der Spalten
     zeitwert = data['Zeitwert']
     schritte = data['Schritte']
-    belohnung = data['Belohnung']
+    belohnung = data['Belohnung'] / 100
     
     # Wall time in datetime-Objekte konvertieren
     zeitwert_datetime = [datetime.fromtimestamp(ts) for ts in zeitwert]
@@ -71,14 +71,15 @@ fig, ax1 = plt.subplots(figsize=(20, 10))
 for i in range(n):
     color = colors[i] if i < len(colors) else None
     ax1.plot(all_schritte[i], all_belohnung[i], color=color, label=legends[i])
-ax1.set_xlabel('Schritte x$10^6$', fontsize=18, labelpad=20)
-ax1.set_ylabel('Belohnung', fontsize=20, labelpad=20)
-ax1.legend(fontsize=20)
-ax1.tick_params(axis='both', which='major', labelsize=16)
+ax1.set_xlabel('Schritte x$10^6$', fontsize=28, labelpad=20)
+ax1.set_ylabel('Belohnung', fontsize=28, labelpad=20)
+ax1.legend(fontsize=28)
+ax1.minorticks_on()
+ax1.tick_params(axis='both', which='major', labelsize=26, width=2, length=4)
 ax1.grid(True)
 
 # x-Achse Ticks alle 200.000 Schritte
-ax1.set_xticks(np.arange(0, max(max(all_schritte, key=lambda x: x.max())) + 1, 1*10**6))
+ax1.set_xticks(np.arange(0, max(max(all_schritte, key=lambda x: x.max())) + 1, 10*10**6))
 
 # Funktion zum Formatieren der Ticks
 def format_func(value, tick_number):
@@ -87,16 +88,16 @@ def format_func(value, tick_number):
 # Anwenden des Formatters auf die x-Achse
 ax1.xaxis.set_major_formatter(FuncFormatter(format_func))
 
-# x-Tick-Labels vertikal ausrichten
-for tick in ax1.get_xticklabels():
-    tick.set_rotation(45)
+# # x-Tick-Labels vertikal ausrichten
+# for tick in ax1.get_xticklabels():
+#     tick.set_rotation(45)
 
 # Sekundäre x-Achse für Zeitwert
 ax2 = ax1.twiny()
 ax2.set_xlim(ax1.get_xlim())
 
 # Setzen der Ticks in n Zeit-Intervallen
-tick_interval = 240  # 12 Stunden in Minuten
+tick_interval = 1080  # 12 Stunden in Minuten
 max_time = int(max_elapsed_minutes[-1])
 tick_positions = np.arange(0, max_time + tick_interval, tick_interval)
 
@@ -113,12 +114,13 @@ for tick in tick_positions:
 # Anwenden der Ticks und Labels auf die sekundäre x-Achse
 ax2.set_xticks(tick_positions * (max(max_elapsed_schritte) / max_time))
 ax2.set_xticklabels(tick_labels)
-ax2.set_xlabel('Vergangene Zeit', fontsize=18, labelpad=20)
-ax2.tick_params(axis='both', which='major', labelsize=16)
+ax2.set_xlabel('Vergangene Zeit', fontsize=28, labelpad=20)
+ax2.minorticks_on()
+ax2.tick_params(axis='both', which='major', labelsize=26, width=2, length=4)
 
-# x-Tick-Labels vertikal ausrichten
-for tick in ax2.get_xticklabels():
-    tick.set_rotation(45)
+# # x-Tick-Labels vertikal ausrichten
+# for tick in ax2.get_xticklabels():
+#     tick.set_rotation(45)
 
 # Anzeigen des Plots
 plt.tight_layout()

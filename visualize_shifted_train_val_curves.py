@@ -17,11 +17,15 @@ plt.rcParams.update({
     'mathtext.fontset': 'dejavuserif'
 })
 
+# Berechnung der Verschiebung um eine halbe Epoche
+half_epoch_shift = (train_loss_df['Step'].max() - train_loss_df['Step'].min()) / (2 * len(train_loss_df))
+train_loss_df['Shifted Step'] = train_loss_df['Step'] + half_epoch_shift
+
 # Plot erstellen
 fig, ax1 = plt.subplots(figsize=(10, 6))
 
-# Trainingsverlust plotten
-ax1.plot(train_loss_df['Step'], train_loss_df['Value'], color='red', label='Trainingsverlust')
+# Verschobenen Trainingsverlust plotten
+ax1.plot(train_loss_df['Shifted Step'], train_loss_df['Value'], color='red', label='Verschobener Trainingsverlust')
 
 # Validierungsverlust plotten
 ax1.plot(val_loss_df['Step'], val_loss_df['Value'], color='blue', label='Validierungsverlust')
@@ -35,15 +39,14 @@ if not val_point.empty:
     ax1.scatter(val_point['Step'], val_point['Value'], color='lime', edgecolor='lime', facecolor='none', linewidths=2, s=500, label=f'Episode {episode}')
 
 # Achsenbeschriftungen und Legende
-ax1.set_xlabel('Episode', fontsize=28)
-ax1.set_ylabel('Verlust', fontsize=28)
-ax1.legend(fontsize=28)
-ax1.grid(True)
+ax1.set_xlabel('Episode', fontsize=22)
+ax1.set_ylabel('Verlust', fontsize=22)
+ax1.legend(fontsize=22)
 
 # Ticks der unteren x-Achse anpassen (volle Hunderterwerte)
 max_step = max(train_loss_df['Step'].max(), val_loss_df['Step'].max())
-ax1.set_xticks(range(0, max_step + 1, 2))
-ax1.tick_params(axis='both', which='major', labelsize=26)
+ax1.set_xticks(range(0, max_step + 1, 100))
+ax1.tick_params(axis='both', which='major', labelsize=20)
 
 # Sekundäre x-Achse für Zeitwert
 ax2 = ax1.twiny()
@@ -61,8 +64,7 @@ val_loss_df['Elapsed Time'] = (val_loss_df['Wall time'] - start_time).dt.total_s
 ax2.set_xlim(ax1.get_xlim())
 # Zeit-Ticks alle 8 Stunden
 max_time = int(max(train_loss_df['Elapsed Time'].max(), val_loss_df['Elapsed Time'].max()))
-tick_positions = range(0, max_time + 1, 600)   # every 10 minutes
-# tick_positions = range(0, max_time + 1, 8 * 3600)   # every 8 hours
+tick_positions = range(0, max_time + 1, 8 * 3600)
 
 # Dynamisches Erstellen der Tick-Labels
 tick_labels = []
@@ -78,9 +80,8 @@ for tick in tick_positions:
 # Anwenden der Ticks und Labels auf die sekundäre x-Achse
 ax2.set_xticks(tick_positions)
 ax2.set_xticklabels(tick_labels)
-ax2.set_xlabel('Vergangene Zeit', fontsize=28, labelpad=20)
-ax2.tick_params(axis='both', which='major', labelsize=26)
-# ax2.grid(True)
+ax2.set_xlabel('Vergangene Zeit', fontsize=22, labelpad=20)
+ax2.tick_params(axis='both', which='major', labelsize=20)
 
 # Plot anzeigen
 plt.tight_layout()

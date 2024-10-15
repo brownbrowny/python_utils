@@ -61,14 +61,16 @@ fig, ax1 = plt.subplots(figsize=(20, 10))
 # Plotten der Belohnung über die Schritte
 ax1.plot(schritte1, belohnung1, color='blue', label='Training 1')
 ax1.plot(schritte2, belohnung2, color='green', label='Training 2')
-ax1.set_xlabel('Schritte x$10^5$', fontsize=18, labelpad=20)
-ax1.set_ylabel('Belohnung', fontsize=20, labelpad=20)
-ax1.legend(fontsize=20)
-ax1.tick_params(axis='both', which='major', labelsize=16)
+ax1.set_xlabel('Schritte x$10^5$', fontsize=28, labelpad=20)
+ax1.set_ylabel('Belohnung', fontsize=28, labelpad=20)
+ax1.legend(fontsize=28)
+
+ax1.minorticks_on()
+ax1.tick_params(axis='both', which='major', labelsize=26, width=2, length=4)
 ax1.grid(True)
 
 # x-Achse Ticks alle 200.000 Schritte
-ax1.set_xticks(np.arange(0, max(schritte1.max(), schritte2.max()) + 1, 2*10**5))
+ax1.set_xticks(np.arange(0, max(schritte1.max(), schritte2.max()) + 1, 5*10**5))
 
 # Funktion zum Formatieren der Ticks
 def format_func(value, tick_number):
@@ -78,8 +80,8 @@ def format_func(value, tick_number):
 ax1.xaxis.set_major_formatter(FuncFormatter(format_func))
 
 # x-Tick-Labels vertikal ausrichten
-for tick in ax1.get_xticklabels():
-    tick.set_rotation(45)
+# for tick in ax1.get_xticklabels():
+#     tick.set_rotation(45)
 
 # Sekundäre x-Achse für Zeitwert
 ax2 = ax1.twiny()
@@ -101,18 +103,19 @@ elapsed_hours_minutes = [(int(elapsed // 60), int(elapsed % 60)) for elapsed in 
 
 # Setzen der Ticks in Intervallen von 5 Minuten
 max_time = int(elapsed_minutes[-1])
-tick_positions = np.arange(0, max_time + 5, 5)
+tick_positions = np.arange(0, max_time + 20, 20)
 tick_labels = [f'{hours}h {minutes}min' for hours, minutes in [(tick // 60, tick % 60) for tick in tick_positions]]
 
 # Anwenden der Ticks und Labels auf die sekundäre x-Achse
 ax2.set_xticks(tick_positions * (max(schritte) / max_time))
 ax2.set_xticklabels(tick_labels)
-ax2.set_xlabel('Vergangene Zeit', fontsize=18, labelpad=20)
-ax2.tick_params(axis='both', which='major', labelsize=16)
+ax2.set_xlabel('Vergangene Zeit', fontsize=28, labelpad=20)
+ax2.minorticks_on()
+ax2.tick_params(axis='both', which='major', labelsize=26, width=2, length=4)
 
-# x-Tick-Labels vertikal ausrichten
-for tick in ax2.get_xticklabels():
-    tick.set_rotation(45)
+# # x-Tick-Labels vertikal ausrichten
+# for tick in ax2.get_xticklabels():
+#     tick.set_rotation(45)
 
 # Anzeigen des Plots
 plt.tight_layout()
